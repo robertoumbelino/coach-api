@@ -1,5 +1,4 @@
-import * as fs from 'fs'
-import * as path from 'path'
+import axios from 'axios'
 
 /**
  * Phrase file name.
@@ -8,26 +7,57 @@ const PHRASE_FILE_NAME = 'phrase.txt'
 const WALLPAPER_WEB_FILE_NAME = 'wallpaper-web.jpg'
 
 /**
- * Root path.
+ * Base url.
  */
-const rootPath = path.join(__dirname, '..', '..')
+const BASE_URL =
+  'https://api.github.com/repositories/338679846/contents/src/phrases/depressions'
+
+/**
+ * Raw base url.
+ */
+const RAW_BASE_URL =
+  'https://raw.githubusercontent.com/robertoumbelino/coach-api/master/src/phrases/depressions'
 
 /**
  * Get a random
  */
-export const getRandomPhrase = () => {
-  const directoryPath = path.join(rootPath, 'phrases', 'depressions')
-  const folders = fs.readdirSync(directoryPath)
+export const getRandomPhrase = async () => {
+  /**
+   * Find tree.
+   */
+  const treeURL = `${BASE_URL}`
+  const treeResponse = await axios.get(treeURL)
 
-  const randomIndex = Math.floor(Math.random() * folders.length) + 0
+  /**
+   * Get tree.
+   */
+  const tree = treeResponse.data
 
-  const folderPath = folders[randomIndex]
+  /**
+   * Random tree index.
+   */
+  const randomIndex = Math.floor(Math.random() * tree.length) + 0
 
-  const filePath = path.join(directoryPath, folderPath)
-  const phrasePath = path.join(filePath, PHRASE_FILE_NAME)
+  /**
+   * Randomize tree.
+   */
+  const { name: phraseFolder } = tree[randomIndex]
 
-  const phrase = fs.readFileSync(phrasePath, { encoding: 'utf-8' })
-  const webImage = path.join(filePath, WALLPAPER_WEB_FILE_NAME)
+  /**
+   * Get phrase.
+   */
+  const phraseURL = `${RAW_BASE_URL}/${phraseFolder}/${PHRASE_FILE_NAME}`
+  const phraseResponse = await axios.get(phraseURL)
 
-  return { phrase, webImage }
+  /**
+   * Get phrase.
+   */
+  const phrase = phraseResponse.data
+
+  /**
+   * Get wallpaper web image.
+   */
+  const wallpaperWeb = `${RAW_BASE_URL}/${phraseFolder}/${WALLPAPER_WEB_FILE_NAME}`
+
+  return { phrase, wallpaperWeb }
 }
