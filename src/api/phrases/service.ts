@@ -17,7 +17,7 @@ export const getRandomPhrase = async () => {
   /**
    * Get wallpaper web image.
    */
-  const wallpaperWeb = 'https://picsum.photos/1900/1200'
+  const wallpaperWeb = 'https://picsum.photos/1024/576'
 
   return { phrase, wallpaperWeb }
 }
